@@ -1,6 +1,7 @@
 // Brand
+// v1.0.0
 // A command to apply return a player's client brand.
-// Created by CarbonGhost.
+// Created by CarbonGhost (Discord: https://discord.gg/rC38tvFSEU).
 
 // The permission level needed in order to execute this command.
 global_permission_level = 4;

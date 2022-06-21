@@ -1,6 +1,7 @@
 // Here
+// v1.0.0
 // A command which prints the player's location to chat.
-// Created by CarbonGhost.
+// Created by CarbonGhost (Discord: https://discord.gg/rC38tvFSEU).
 
 // The permission level needed in order to execute this command.
 global_permission_level = 1;

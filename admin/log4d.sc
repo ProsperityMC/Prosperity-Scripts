@@ -1,6 +1,7 @@
 // Log4D
+// v0.1.0
 // A small script which pushes logs of your choice to a Discord channel.
-// Created by CarbonGhost.
+// Created by CarbonGhost (Discord: https://discord.gg/rC38tvFSEU).
 // Requires Discarpet (https://github.com/replaceitem/carpet-discarpet).
 
 // Your bot's application ID.
