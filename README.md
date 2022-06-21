@@ -6,6 +6,12 @@ A collection of [Scarpet](https://github.com/gnembon/fabric-carpet/blob/master/d
 
 ## Current scipts
 
+### Customize
+
+A command which allows the player to modify the `CustomModelData` property of their items. Requires a resource pack to function. There are plans to expand this with features like colors and lore, as well as an option to require a certain experience level to run the command.
+
+[here.sc](https://github.com/ProsperityMC/Prosperity-Scripts/blob/main/utilities/customize.sc)
+
 ### Here
 
 A command which prints the player's current location to the public chat. If they are in the overworld or nether it will print their equivalent location in the other dimension.
