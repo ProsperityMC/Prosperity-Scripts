@@ -61,7 +61,7 @@ __on_start() -> (
 
 __on_stop() -> (
     __save_db();
-;)
+);
 
 __waypoint_create(name, position, color) -> (
     new_waypoint = {
