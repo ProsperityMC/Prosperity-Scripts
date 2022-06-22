@@ -15,10 +15,9 @@ global_help_message_link = '';
 __config() -> {
     'scope' -> 'player',
     'command_permission' -> global_permission_level,
-    'commands' -> 
-    {
-        'model <model>' -> _(model) -> customize_item(model),
-        'model reset' -> _() -> customize_item(0),
+    'commands' -> {
+        'model <model>' -> _(model) -> apply_custom_model(model, inventory_get(player(), query(player(), 'selected_slot'));),
+        'model reset' -> _() -> apply_custom_model(0),
         'help' -> _() -> print(
             player(), format('w You can use /customize to apply the custom model data property to your items')
             + if(global_help_message_link != '', format('w  ', 'u Learn more', '@' + global_help_message_link)) + '.';
@@ -28,8 +27,8 @@ __config() -> {
         'model' -> { 'type' -> 'int', 'min' -> 0, 'max' -> 16000000 },
     }
 };
-customize_item(model) -> (
-    item = inventory_get(player(), query(player(), 'selected_slot'));
+
+apply_custom_model(model, item) -> (
     if(model < 0,
         print(player(), format('r A model cannot be a negative number.'));
     );

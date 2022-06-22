@@ -1,5 +1,5 @@
 // Log4D
-// v0.1.0
+// v0.0.0
 // A small script which pushes logs of your choice to a Discord channel.
 // Created by CarbonGhost (Discord: https://discord.gg/rC38tvFSEU).
 // Requires Discarpet (https://github.com/replaceitem/carpet-discarpet).
@@ -34,13 +34,18 @@ __config() -> {
         'discarpet' -> '*',
     };
 };
+
 global_channel = dc_channel_from_id(global_channel_id);
+// Prevent recursion.
 global_executions = 0;
+
 __on_tick() -> (
     global_executions = 0;
 );
+
 __on_system_message(text, type) -> (
     global_executions += 1;
+
     if(global_executions < 10,
         if(global_log_types ~ type != null,
             task(_(outer(text)) -> (
