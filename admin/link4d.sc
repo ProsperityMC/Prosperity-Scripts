@@ -34,5 +34,6 @@ parse_mentions(msg,server) -> (
     for(server~'users',
         msg = replace(msg,'@' + dc_get_display_name(_,server),_~'mention_tag');
     );
+    msg = replace(msg, '@everyone','`@everyone`');
     msg;
 );
