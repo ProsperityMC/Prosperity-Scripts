@@ -24,6 +24,12 @@ A script using [Discarpet](https://github.com/replaceitem/carpet-discarpet) whic
 
 [log4d.sc](https://github.com/ProsperityMC/Prosperity-Scripts/blob/main/admin/log4d.sc)
 
+### Link4D `v1.0.0`
+
+A script using [Discarpet](https://github.com/replaceitem/carpet-discarpet) which creates a two-way link between your Minecraft and Discord server chat.
+
+[log4d.sc](https://github.com/ProsperityMC/Prosperity-Scripts/blob/main/admin/link4d.sc)
+
 ### Brand `v1.0.0`
 
 A command which privately prints a player's client brand.
