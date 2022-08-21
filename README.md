@@ -28,7 +28,7 @@ A script using [Discarpet](https://github.com/replaceitem/carpet-discarpet) whic
 
 A script using [Discarpet](https://github.com/replaceitem/carpet-discarpet) which creates a two-way link between your Minecraft and Discord server chat.
 
-[log4d.sc](https://github.com/ProsperityMC/Prosperity-Scripts/blob/main/admin/link4d.sc)
+[link4d.sc](https://github.com/ProsperityMC/Prosperity-Scripts/blob/main/admin/link4d.sc)
 
 ### Brand `v1.0.0`
 
@@ -36,7 +36,13 @@ A command which privately prints a player's client brand.
 
 [brand.sc](https://github.com/ProsperityMC/Prosperity-Scripts/blob/main/admin/brand.sc)
 
-## Waypoint `v0.0.0`
+### WhoIsOnline `v1.0.0`
+
+A script using [Discarpet](https://github.com/replaceitem/carpet-discarpet) which create a Discord bot command to print the players who are currently on the server.
+
+[whoisonline.sc](https://github.com/ProsperityMC/Prosperity-Scripts/blob/main/admin/whoisonline.sc)
+
+### Waypoint `v0.0.0`
 
 A script allowing players to create and manage waypoints that are stored persistently. Currently incomplete. There are plans to turn the waypoint managment system into a library so that other scripts can add additional functionality to interact with waypoint databases.
 
