@@ -1,5 +1,5 @@
 // WhoIsOnline
-// v1.0.0
+// v1.0.1
 // Created by CarbonGhost (Discord: https://discord.gg/rC38tvFSEU).
 // A script which registers a Discord command returning the names of all online players.
 // WARNING: This script might conflict with other scripts that register application commands with Discarpet.
@@ -13,6 +13,8 @@ global_server_id = '844449121376534558';
 global_command_name = 'whoisonline';
 // The description of the command as it will appear in Discord.
 global_command_description = 'Returns a list of players who are on the server.';
+// Whether or not the command output is "ephemeral" (the output is shown only to the person who runs it).
+global_command_is_ephemeral = true;
 
 
 
@@ -25,14 +27,23 @@ __config() -> {
 
 global_server = dc_server_from_id(global_server_id);
 
-task(_() -> initialize_commands());
+delete_all_commands() -> (
+  for(global_server ~ 'slash_commands',
+    dc_delete(_);
+    logger('info', str('Deleted %s.', _));
+  );
+  logger('info', 'Deleted all Discord application commands.');
+);
 
 initialize_commands() -> (
-  // Remove all existing application commands before initializing.
-  for(global_server ~ 'slash_commands',
-      dc_delete(_);
-  );
+ // Delete the command if it has already been registered.
+ existing_command = global_server ~ 'slash_commands' ~ 'name' ~ global_command_name;
 
+ if(existing_command != null,
+    dc_delete(existing_command);
+ );
+
+ // Register the new command.
  dc_create_application_command(
     'slash_command', 
     {
@@ -46,19 +57,25 @@ initialize_commands() -> (
 __on_discord_slash_command(command) -> (
   if(command ~ 'command_name' == global_command_name,
     task(_(outer(command)) -> (
-      if(length(player('all')) == 0,
+      player_count = length(player('all'));
+
+      if(player_count == 0,
         response = 'There are no players online...',
       // else
         response = str(
-          '**There are %d players online:**\n%s', 
-          length(player('all')),                      // Player count.
+          '**There %s %d player%s online:**\n%s',
+          if(player_count == 1, 'is', 'are'),         // Can't be having incorrect grammar, can we?
+          player_count,                               // Player count.
+          if(player_count == 1, '', 's'),
           reduce(player('all'), _a + _ + '\n', ''),   // List of players on the server with newlines between them.
         )
       );
 
-      dc_respond_interaction(command, 'RESPOND_IMMEDIATELY', response);
+      dc_respond_interaction(command, 'RESPOND_IMMEDIATELY', { 'content' -> response, 'ephemeral' -> global_command_is_ephemeral });
     ));
   // else
     return();
   );
 );
+
+task(_() -> initialize_commands());

@@ -22,11 +22,23 @@ A command which prints the player's current location to the public chat. If they
 
 A script using [Discarpet](https://github.com/replaceitem/carpet-discarpet) which sends log events of your choice to your Discord. There are plans to add more features to this.
 
+#### TODO
+
+- [ ] Needs a rewrite.
+
 [log4d.sc](https://github.com/ProsperityMC/Prosperity-Scripts/blob/main/admin/log4d.sc)
 
 ### Link4D `v1.0.0`
 
 A script using [Discarpet](https://github.com/replaceitem/carpet-discarpet) which creates a two-way link between your Minecraft and Discord server chat.
+
+#### TODO
+
+- [ ] Show Discord formatting in Minecraft.
+- [ ] Add clickable links in Minecraft.
+- [ ] Handle messages which contain attachments in Minecraft.
+- [ ] Fix some formatting in Discord.
+- [ ] Add optional embeds.
 
 [link4d.sc](https://github.com/ProsperityMC/Prosperity-Scripts/blob/main/admin/link4d.sc)
 
@@ -36,7 +48,7 @@ A command which privately prints a player's client brand.
 
 [brand.sc](https://github.com/ProsperityMC/Prosperity-Scripts/blob/main/admin/brand.sc)
 
-### WhoIsOnline `v1.0.0`
+### WhoIsOnline `v1.0.1`
 
 A script using [Discarpet](https://github.com/replaceitem/carpet-discarpet) which create a Discord bot command to print the players who are currently on the server.
 
@@ -44,6 +56,10 @@ A script using [Discarpet](https://github.com/replaceitem/carpet-discarpet) whic
 
 ### Waypoint `v0.0.0`
 
-A script allowing players to create and manage waypoints that are stored persistently. Currently incomplete. There are plans to turn the waypoint managment system into a library so that other scripts can add additional functionality to interact with waypoint databases.
+A script allowing players to create and manage waypoints that are stored persistently. Currently incomplete. There are plans to turn the waypoint management system into a library so that other scripts can add additional functionality to interact with waypoint databases.
+
+#### TODO
+
+- [ ] Finish the basic implementation.
 
 [waypoint.sc](https://github.com/ProsperityMC/Prosperity-Scripts/blob/main/utilities/waypoint.sc)
