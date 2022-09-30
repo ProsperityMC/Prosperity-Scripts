@@ -6,7 +6,7 @@ A collection of [Scarpet](https://github.com/gnembon/fabric-carpet/blob/master/d
 
 ## Current scripts
 
-### Customize `v1.0.0`
+### Customize `v2.0.0`
 
 A command which allows the player to modify the `CustomModelData` property of their items. Requires a resource pack to function. There are plans to expand this with features like colors and lore, as well as an option to require a certain experience level to run the command.
 
