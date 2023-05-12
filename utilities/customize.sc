@@ -1,196 +1,306 @@
-// Customize
-// v2.0.0
-// A script for customizing items with renaming, lore, and adding custom model data.
-// Please note that the 'model' feature requires a resource pack which features 'CustomModelData'..
-// Created by CarbonGhost (Discord: https://discord.gg/rC38tvFSEU).
+////////////////////////////////////////////////////////////////////////////////
+// Customize - READ THIS BEFORE USING THIS SCRIPT ----------------------------//
+////////////////////////////////////////////////////////////////////////////////
+//
+// This script allows players to customize the name, lore, and custom model data
+// of their items. Name and lore customization can be achieved with no work on
+// your part, but custom model support is done via a resource pack, and
+// configuration of the `aliases.json` file.
+// 
+// If you use the custom model feature you will need to load the script, then
+// open the `aliases.json` file which will be created in your `/scripts` folder.
+// The format is the Minecraft item name, follow by a key which identifies your
+// model, this can include spaces, caps, etc; then the CustomModelData number.
+//
+// Example:
+//
+// `aliases.json````````````````
+// "stone_sword": {
+//   "Stone Sword Model A": 100,
+//   "Stone Sword Model B": 101,
+//   "Stone Sword Model C": 102
+// },
+// "diamond_axe": {
+//   "Diamond Axe Model A": 300,
+//   "Diamond Axe Model B": 301,
+//   "Diamond Axe Model C": 302
+// }
+// `````````````````````````````
+// 
+// Once you have added your models, run /[script name] reload.
+//
+// To load / reload the entire script run `/script load [script_name]`
 
-// The permission level needed in order to execute this command.
-global_permission_level = 1;
+
+////////////////////////////////////////////////////////////////////////////////
+// Script - Any modifications beyond this point are at your own risk ---------//
+////////////////////////////////////////////////////////////////////////////////
 
 
+// Aliases file ------------------------------------------------------------- //
+
+aliases(item) -> global_aliases : item;
 
 
-// Script:
-__config() -> {
-	'scope' -> 'player',
-	'command_permission' -> global_permission_level,
-	'commands' -> {
-		'model set <model>' -> _(model) -> command_model_set(model),
-		'model as <alias>'	-> _(alias) -> command_model_set(aliases_from_item(holding() : 0) : 0 : alias),
-		'model clear'       -> _() 			-> command_model_clear(),
-		'lore set <lore>'   -> _(lore) 	-> command_lore_set(lore),
-		'lore clear'        -> _() 			-> command_lore_clear(),
-		'name set <name>'   -> _(name) 	-> command_name_set(name),
-		'name clear'        -> _() 			-> command_name_clear(),
-		'help'              -> _() 			-> command_help(),
-	},
-	'arguments' -> {
-		'model' 	-> { 'type' -> 'int', 'min' -> 0, 'max' -> 16000000, 'suggest' -> [] },
-		'alias' 	-> {
-			'type' -> 'text',
-			'suggester' -> _(arg) -> (
-				aliases_from_item(holding() : 0);
-			),
-		},
-		'lore'		-> { 'type' -> 'text', 'suggest' -> [] },
-		'name'  	-> { 'type' -> 'text', 'suggest' -> [] },
-	},
-};
+init_aliases() -> (
+  data = read_file('aliases', 'json');
+  default = {};
 
-__on_start() -> (
-	logger('info', '[customize.sc] Customize your items! Use /customize help for more info.');
-	init_config();
+  if(data == null,
+    data = write_file('aliases', 'json', default);
+  );
+
+  return(data);
 );
 
-// Utilities ----------------------------------------------------------------- //
 
-// Returns a list for item data: '[item, quantity, {nbt data}]'.
-holding() -> (
-	i = inventory_get(player(), player() ~ 'selected_slot');
-	if(i : 2 == null, i : 2 = {});      // Ensure that NBT tags are never null.
-	return(i);
+// Command handlers --------------------------------------------------------- //
+
+command_base() -> (
+  print(
+    format(
+      str('w %s.sc v%s', system_info('app_name'), join('.', global_version)),
+      '^w View source...',
+      '@https://github.com/prosperitymc/Prosperity-Scripts',
+    );
+  );
 );
 
-message(s) -> print(player(), format(s));
 
-// Replaces the item the player is holding with the same item and quantity, plus
-// the NBT definied as a map in the first param.
-replace_held_item(nbt_as_map) -> (
-	inventory_set(
-		player(),					  					  // Select the player entity.
-		player() ~ 'selected_slot',	    // Inventory index of held item.
-		holding() : 1, 							    // Quantity of held item.
-		holding() : 0,							    // Name of held item.
-		encode_nbt(nbt_as_map),         // Parse Scarpet map into NBT.
-	);
+command_model_list() -> (
+  map(global_aliases,
+    item = _;
+    msg = format(str('wb %s: ', item_display_name(_)));
+    
+    map(global_aliases : item,
+      alias = _;
+
+      msg += format(
+        str('wi %s', alias),
+        str('^w Model ID: %s\nClick to apply...', global_aliases : item : alias),
+        str('?/%s model set %s', system_info('app_name'), alias),
+      );
+      if(_i + 1 < length(global_aliases : item), msg += ', ');
+    );
+    
+    print(msg);
+  );
 );
 
-return_if_hand_empty() -> (
-	if(holding() == null,
-		message('r You must be holding an item to execute this command');
-		return();
-	);
-);
-
-add_pair(map, k, v) -> (map += k; map : k = v; return(map));
-
-// Configuration ------------------------------------------------------------- //
-
-init_config() -> (
-	global_config = read_file('/config', 'json');
-	default_config = { '*' -> { 'default' -> 0 }, 'a_minecraft_item_name' -> { 'a model alias' -> 123 } };
-
-	// Create a config file if one does not already exist.
-	if(global_config == null, task(_(outer(default_config)) -> (write_file('/config', 'json', default_config))));
-);
-
-// Returns a list ['alias name', model].
-aliases_from_item(item) -> (return(map(pairs(global_config : item), _)));
-
-// Command Handling ---------------------------------------------------------- //
 
 command_model_set(model) -> (
-	return_if_hand_empty();
+  if(error_hand_empty(), return());
 
-	data = parse_nbt(holding() : 2);
+  if(keys(aliases(holding() : 0)) ~ model == null,
+    print(format('r That is not a valid model'));
 
-	add_pair(data, 'CustomModelData', model);
-	replace_held_item(data);
+    return(true);
+  );
 
-	sound('minecraft:block.amethyst_block.chime', pos(player()));
-	message(str('w Changed this item\'s to model %d', model));
+  item = holding() : 0;
+  model_id = global_aliases : item : model;
+  data = parse_nbt(holding() : 2);
+
+  put(data, 'CustomModelData', model_id);
+  replace_held_item(data);
+
+  sound('minecraft:block.amethyst_block.chime', pos(player()), 100);
+  print(
+    'Set the model of your ' 
+    + format(str('wi %s to ', item_display_name(item)))
+    + format(
+      str('wi %s', model),
+      str('^w Model ID: %s', model_id),
+    );
+  );
 );
+
 
 command_model_clear() -> (
-	return_if_hand_empty();
+  if(error_hand_empty(), return());
 
-	data = parse_nbt(holding() : 2);
+  item = holding() : 0;
+  data = parse_nbt(holding() : 2);
 
-	if(data : 'CustomModelData' == null,
-		message('r This item does not have a custom model to clear');
-		return();
+  if(data : 'CustomModelData' == null,
+		print(format('r This item does not have a custom model to clear'));
+		
+    return();
 	);
-	// Remove the 'CustomModelData' key from the 'data' map. While setting this to 0 would have
-	// the same effect, to clear to the default model, this seems cleaner.
-	delete(data : 'CustomModelData');
+
+  delete(data : 'CustomModelData');
 	replace_held_item(data);
 
-	sound('minecraft:ui.toast.out', pos(player()));
-	message('w Cleared this item\'s custom model');
+	sound('minecraft:ui.toast.out', pos(player()), 100);
+	print('Cleared the custom model data from this item');
 );
 
-command_lore_set(lore) -> (
-	data = parse_nbt(holding() : 2);
 
-	return_if_hand_empty();
+command_lore_set(text) -> (
+  if(error_hand_empty(), return());
+  
+  item = holding() : 0;
+  data = parse_nbt(holding() : 2);
 
-	// Add the 'display' tag if it does not already exist on the item.
-	if(data : 'display' == null, add_pair(data, 'display', {}));
+  if(data : 'display' == null, put(data, 'display', {}));
 	
-	add_pair(data : 'display', 'Lore', [str('{"text":"%s"}', lore)]);
+	put(data : 'display', { 'Lore' -> [str('{"text":"%s"}', text)] });
 	replace_held_item(data);
 
-	sound('minecraft:ui.cartography_table.take_result', pos(player()));
-	message(str('w Added the lore to this item: "%s"', lore));
+  sound('minecraft:ui.cartography_table.take_result', pos(player()), 100);
+  print(
+    'Set the lore of your ' 
+    + format(str('wi %s to ', item_display_name(item)))
+    + format(str('wi %s', text)),
+  );
 );
+
 
 command_lore_clear() -> (
-	data = parse_nbt(holding() : 2);
+  if(error_hand_empty(), return());
 
-	return_if_hand_empty();
-
-	if(data : 'display' == null,
-		message('r This item has no lore to clear');
+  data = parse_nbt(holding() : 2);
+  
+  if(data : 'display' == null,
+		print(format('r This item has no lore to clear'));
 		return();
 	);
-	data = parse_nbt(holding() : 2);
 
-	delete(data : 'display' : 'Lore');
+  delete(data : 'display' : 'Lore');
 	replace_held_item(data);
 
-	sound('minecraft:ui.toast.out', pos(player()));
-	message('w Cleared custom lore from this item');
+	sound('minecraft:ui.toast.out', pos(player()), 100);
+	print('Cleared custom lore from this item');
 );
 
-command_name_set(name) -> (
-	data = parse_nbt(holding() : 2);
 
-	return_if_hand_empty();
+command_name_set(text) -> (
+  if(error_hand_empty(), return());
+  
+  item = holding() : 0;
+  data = parse_nbt(holding() : 2);
 
-	// Add the 'display' tag if it does not already exist on the item.
-	if(data : 'display' == null, add_pair(data, 'display', {}));
+  if(data : 'display' == null, put(data, 'display', {}));
 	
-	add_pair(data : 'display', 'Name', str('{"text":"%s"}', name));
+	put(data : 'display', { 'Name' -> str('{"text":"%s"}', text) });
 	replace_held_item(data);
 
-	sound('minecraft:ui.cartography_table.take_result', pos(player()));
-	message(str('w Changed this item\'s name to: "%s"', name));
+  sound('minecraft:ui.cartography_table.take_result', pos(player()), 100);
+  print(
+    'Set the name of your ' 
+    + format(str('wi %s to ', item_display_name(item)))
+    + format(str('wi %s', text)),
+  );
 );
+
 
 command_name_clear() -> (
-	data = parse_nbt(holding() : 2);
+  if(error_hand_empty(), return());
 
-	return_if_hand_empty();
-
-	if(data : 'display' == null,
-		message('r This item does not have a custom name to clear');
+  data = parse_nbt(holding() : 2);
+  
+  if(data : 'display' == null ||
+    data : 'display' : 'Name' == null,
+		print(format('r This item has no name to clear'));
 		return();
 	);
-	data = parse_nbt(holding() : 2);
 
-	delete(data : 'display' : 'Name');
+  delete(data : 'display' : 'Name');
 	replace_held_item(data);
 
-	sound('minecraft:ui.toast.out', pos(player()));
-	message('w Cleared the custom name from this item');
+	sound('minecraft:ui.toast.out', pos(player()), 100);
+	print('Cleared custom name from this item');
 );
 
-command_help() -> (
-	message('w /customize model set <model> - Sets your held item to a specified custom model. Requires a resource pack');
-	message('w /customize model as <alias> - Sets your held item to a specified custom model alias, which can be configured');
-	message('w /customize model clear - Clears your held item to it\'s default model');
-	message('w /customize lore set <lore> - Adds a lore attribute to your held item');
-	message('w /customize lore clear - Clears the lore attribute of your held item');
-	message('w /customize name set <name> - Renames your held item at no XP cost');
-	message('w /customize name clear - Clears your held item\'s name');
+
+command_reload() -> (
+  if(player() ~ 'permission_level' < 2,
+    print(format('r You do not have permission to do that'));
+    return();
+  );
+
+  global_aliases = init_aliases();
+
+  print('Reloaded model aliases file...');
 );
+
+
+command_help() -> (
+  messages = [
+    '/%s model set <model> - Sets the current item to a model defined by the custom resource pack',
+    '/%s model clear - Clears the current item\'s custom model',
+    '/%s lore set <text> - Adds lore text to your item',
+    '/%s lore clear - Removed the lore text from your item',
+    '/%s name set <text> - Changes the name of your item',
+    '/%s name clear - Removes the custom name from your item',
+    '/%s reload - Reloads the model aliases file',
+    '/%s help - Prints this very message',
+  ];
+
+  print(join('\n', map(messages, str(_, system_info('app_name')))));
+);
+
+
+// Utils -------------------------------------------------------------------- //
+
+holding() -> (
+	i = inventory_get(player(), player() ~ 'selected_slot');
+	if(i : 2 == null, i : 2 = {});
+
+  return(i);
+);
+
+
+replace_held_item(nbt_as_map) -> (
+	inventory_set(
+		player(),
+		player() ~ 'selected_slot',
+		holding() : 1,
+		holding() : 0,
+		encode_nbt(nbt_as_map),
+	);
+);
+
+
+error_hand_empty() -> (
+	if(holding() == null,
+		print(format('r You must be holding an item to execute this command'));
+		
+    return(true);
+	);
+);
+
+
+// Globals ------------------------------------------------------------------ //
+
+global_version = [2, 0, 1];
+global_aliases = init_aliases();
+
+
+// Scarpet config ----------------------------------------------------------- //
+
+__config() -> {
+  'scope' -> 'player',
+  'commands' -> {
+    '' -> _() -> command_base(),
+    'model list' -> _() -> command_model_list(),
+    'model set <model>' -> _(model) -> command_model_set(model),
+    'model clear' -> _() -> command_model_clear(),
+    'lore set <text>' -> _(text) -> command_lore_set(text),
+    'lore clear' -> _() -> command_lore_clear(),
+    'name set <text>' -> _(text) -> command_name_set(text),
+    'name clear' -> _() -> command_name_clear(),
+    'reload' -> _() -> command_reload(),
+    'help' -> _() -> command_help(),
+  },
+  'arguments' -> {
+    'model' -> {
+      'type' -> 'text',
+      'suggester' -> _(arg) -> keys(aliases(holding() : 0)),
+    },
+    'text' -> {
+      'type' -> 'text',
+      'suggest' -> [],
+    },
+  },
+};
