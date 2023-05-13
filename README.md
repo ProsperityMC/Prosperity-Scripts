@@ -22,7 +22,7 @@ Make sure to review the included documentation before using it!
 - Highly configurable.
 - ...more
 
-[brand.sc](https://github.com/ProsperityMC/Prosperity-Scripts/blob/main/admin/discord.sc)
+[discord.sc](https://github.com/ProsperityMC/Prosperity-Scripts/blob/main/admin/discord.sc)
 
 
 ### Customize `v2.0.1`
