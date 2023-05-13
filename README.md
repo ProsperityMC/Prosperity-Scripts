@@ -4,7 +4,26 @@
 
 A collection of [Scarpet](https://github.com/gnembon/fabric-carpet/blob/master/docs/scarpet/Documentation.md) scripts performing various functions on the Prosperity server.
 
-## Current scripts
+## Current Scripts
+
+### Discord `v1.0.0`
+
+A feature-rich Discord integration script utilizing [Discarpet](https://modrinth.com/mod/discarpet).
+
+Make sure to review the included documentation before using it!
+
+#### Features:
+
+- Real time Discord ⇄ Minecraft chat bridge using webhooks.
+- Whitelisting via Discord slash commands.
+- Account linking system including role assignment.
+- Assign users Discord roles when they're on the server.
+- Player count status.
+- Highly configurable.
+- ...more
+
+[brand.sc](https://github.com/ProsperityMC/Prosperity-Scripts/blob/main/admin/discord.sc)
+
 
 ### Customize `v2.0.1`
 
