@@ -823,8 +823,8 @@ __config() -> {
 
 task(_() -> (
   global_webhook = dc_webhook_from_url(global_config : 'chat_bridge_webhook_url');
+  global_link_channel = dc_channel_from_id(global_webhook ~ 'channel' ~ 'id');
 ));
-global_link_channel = dc_channel_from_id(global_webhook ~ 'channel' ~ 'id');
 global_logging_channel = dc_channel_from_id(global_config : 'logging_channel_id');
 global_server = dc_server_from_id(global_config : 'discord_server_id');
 global_linked_roles = map(global_config : 'account_link_roles', dc_role_from_id(_));
