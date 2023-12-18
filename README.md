@@ -25,7 +25,7 @@ Make sure to review the included documentation before using it!
 [discord.sc](https://github.com/ProsperityMC/Prosperity-Scripts/blob/main/admin/discord.sc)
 
 
-### Customize `v2.0.1`
+### Customize `v2.0.2`
 
 A script giving players the power to customize their items' names, lore, and models.
 
