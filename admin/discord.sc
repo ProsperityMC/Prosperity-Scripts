@@ -155,7 +155,7 @@ handle_minecraft_bridge_message(message, translate) -> (
   
   task(_(outer(message), outer(translate)) -> (
       message_data = decode_json(encode_json(message));
-      content = { 'content' -> message, 'allowed_mentions' -> { 'mention_users' -> true }};
+      content = { 'content' -> escape_markdown(message), 'allowed_mentions' -> { 'mention_users' -> true }};
       profile = {
         'name' -> global_config : 'minecraft_server_name',
         'avatar' -> global_config : 'minecraft_server_icon_url',
@@ -460,6 +460,16 @@ llog(level, kind, message) -> (
 format_mc_error(error) -> str('*%s*', replace(error, '(<--\\[HERE\\])', ' **← here**'));
 
 
+escape_markdown(s) -> (
+  s = replace(s, '_', '\\\\_');
+  s = replace(s, '\\*', '\\\\*');
+  s = replace(s, '~', '\\\\~');
+  s = replace(s, '`', '\\\\`');
+
+  return(s);
+);
+
+
 trim_unix_time(t) -> join('', map(range(10), split('', convert_date(map(range(6), convert_date(t) : _))) : _));
 
 
@@ -603,9 +613,9 @@ slash_whitelist(command) -> (
 
     // `null` is equal to the error value, so `null` means the command succeeded.
     if(result : 2 == null, 
-      messages = result : 1,
+      messages = escape_markdown(result : 1),
     // else
-      messages = [format_mc_error(result : 2)];
+      messages = [format_mc_error(escape_markdown(result : 2))];
       
       if(system_info('world_carpet_rules') : 'commandScriptACE' != 4,
         map(
