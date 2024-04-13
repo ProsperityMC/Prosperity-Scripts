@@ -288,13 +288,16 @@ prompt_account_link(p) -> (
     
     print(
       p,
-      'You have not linked your Discord account to Minecraft. Do so by direct messaging '
+      'You have not yet linked your Discord account to Minecraft. To do so:'
+      + '\n • Open Discord'
+      + '\n • Press Ctrl + K'
+      + '\n • Enter '
       + format(
           str('#5865f2 @%s', split('#', bot_name) : 0), 
-          str('^w Click to copy %s', bot_name),
-          str('&%s', bot_name),
+          str('^w Click to copy @%s', bot_name),
+          str('&@%s', bot_name),
         )
-      + ' the following code: '
+      + '\n • Send the following code: '
       + format(
           str('gi %s', link_code), 
           str('^w Click to copy %s', link_code),
@@ -307,7 +310,6 @@ prompt_account_link(p) -> (
 
 handle_account_link_message(message) -> (
   user = message ~ 'user';
-
   mc_uuid = first(
     global_player_link_codes, 
     global_player_link_codes : _ == message ~ 'readable_content'
@@ -330,14 +332,14 @@ handle_account_link_message(message) -> (
 
     print(
       player(linked_player_username),
-      str('Your account, %s, was successfully linked.', user ~ 'discriminated_name');
+      str('Your account, %s, was successfully linked.', user ~ 'name');
     );
   
     task(_(outer(message), outer(user), outer(linked_player_username), outer(mc_uuid)) -> (
       dc_send_message(
         user,
         {
-          'content' -> str('Your account, **%s**, was successfully linked.', linked_player_username),
+          'content' -> str('Your Minecraft account, **%s**, was successfully linked.', linked_player_username),
           'reply_to' -> message,
         },
       );
@@ -369,8 +371,11 @@ handle_account_link_message(message) -> (
                 {
                   'name' -> 'Assigned Roles',
                   'value' -> (
-                    if(length(global_linked_roles) == 0, 'None');
-                    if(length(global_linked_roles) > 0, join(' ', map(global_linked_roles, _ ~ 'mention_tag')));
+                    if(length(global_linked_roles) == 0, 
+                      'None',
+                    // else
+                      join(' ', map(global_linked_roles, _ ~ 'mention_tag'));
+                    );
                   ),
                 },
               ],
@@ -714,7 +719,7 @@ command_link_list() -> (
           str('&%s', global_linked_players ~ _),
         )
         + format(
-          str('w (%s)', dc_user_from_id(global_linked_players : _ : 'discord_id') ~ 'discriminated_name'),
+          str('w (%s)', dc_user_from_id(global_linked_players : _ : 'discord_id')),
           str('^w Discord ID: %s', global_linked_players : _ : 'discord_id'),
           str('&%s', global_linked_players : _ : 'discord_id'),
         );
@@ -773,8 +778,11 @@ command_link_remove(linked_player) -> (
                 {
                   'name' -> 'Unassigned Roles',
                   'value' -> (
-                    if(length(global_linked_roles) == 0, 'None');
-                    if(length(global_linked_roles) > 0, join(' ', map(global_linked_roles, _ ~ 'mention_tag')));
+                    if(length(global_linked_roles) == 0, 
+                      'None',
+                    // else
+                      join(' ', map(global_linked_roles, _ ~ 'mention_tag'));
+                    );
                   ),
                 },
               ],
