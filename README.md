@@ -24,6 +24,20 @@ Make sure to review the included documentation before using it!
 
 [discord.sc](https://github.com/ProsperityMC/Prosperity-Scripts/blob/main/admin/discord.sc)
 
+### PoI `v1.0.0`
+
+A script to facilitate better navigation around servers and to provide a better player experience for adding markers to BlueMap.
+
+More information at the top of the file.
+
+#### Features:
+- Add, remove, and edit waypoints and view their locations
+- Players can only remove or edit waypoints created by them
+- Configurable permissions for adding and removing waypoints
+- Fields for data migration in future updates
+- Integrates seamlessly with [BlueMap](https://modrinth.com/plugin/bluemap) and [BlueMap Marker](https://modrinth.com/plugin/bmarker), see more at the top of the script
+
+[poi.sc](https://github.com/ProsperityMC/Prosperity-Scripts/blob/main/utilities/poi.sc)
 
 ### Customize `v2.0.2`
 
